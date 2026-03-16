@@ -2,7 +2,6 @@
 
 Uma extensão simples e poderosa para o Chrome que identifica quem você segue no Instagram mas que não te segue de volta.
 
-![InstaUnfollow Banner](banner.png)
 
 ## 🚀 Funcionalidades
 
@@ -21,12 +20,6 @@ Uma extensão simples e poderosa para o Chrome que identifica quem você segue n
 3. Ative o **Modo do desenvolvedor**.
 4. Clique em **Carregar sem compactação** e selecione a pasta do projeto.
 
-## 📦 Como Publicar na Chrome Store
-
-1. Crie um arquivo ZIP da pasta do projeto (excluindo a pasta `.git`).
-2. Vá para o [Chrome Web Store Developer Console](https://chrome.google.com/webstore/devconsole).
-3. Crie um novo item e faça o upload do arquivo ZIP.
-4. Preencha a descrição, imagens e envie para revisão.
 
 ## ⚠️ Aviso Legal
 
