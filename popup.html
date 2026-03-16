@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaUnfollow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>InstaUnfollow</h1>
+            <p id="status">Pronto para escanear</p>
+        </header>
+
+        <main>
+            <div class="actions">
+                <button id="scan-btn" class="primary-btn">Escanear Seguidores</button>
+                <button id="unfollow-all-btn" class="danger-btn hidden">Remover Todos</button>
+            </div>
+
+            <div id="progress-container" class="hidden">
+                <div class="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <p id="progress-text">0%</p>
+            </div>
+
+            <div id="results-container" class="hidden">
+                <h2>Não te seguem de volta (<span id="count">0</span>)</h2>
+                <ul id="user-list">
+                    <!-- Usuários aparecerão aqui -->
+                </ul>
+            </div>
+
+            <div id="login-msg" class="hidden">
+                <p>Por favor, faça login no Instagram para continuar.</p>
+                <a href="https://www.instagram.com" target="_blank" class="link-btn">Ir para o Instagram</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>Use com moderação para evitar bloqueios.</p>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

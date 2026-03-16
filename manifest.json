@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "InstaUnfollow - Quem não te segue?",
+  "version": "1.0",
+  "description": "Veja quem você segue no Instagram e não te segue de volta, com opção de remover.",
+  "permissions": [
+    "storage",
+    "cookies",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.instagram.com/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Abrir InstaUnfollow"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.instagram.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
