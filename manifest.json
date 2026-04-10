@@ -4,7 +4,6 @@
   "version": "1.0",
   "description": "Veja quem você segue no Instagram e não te segue de volta, com opção de remover.",
   "permissions": [
-    "storage",
     "cookies",
     "tabs"
   ],
