@@ -10,6 +10,15 @@ const DEFAULT_HEADERS = {
     'X-ASBD-ID': ASBD_ID,
 };
 
+chrome.action.onClicked.addListener((tab) => {
+    chrome.windows.create({
+        url: chrome.runtime.getURL("popup.html"),
+        type: "popup",
+        width: 400,
+        height: 600
+    });
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'startScan') {
         runScan().then(sendResponse);
