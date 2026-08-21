@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "InstaUnfollow - Quem não te segue?",
-  "version": "1.0",
+  "version": "1.2",
   "description": "Veja quem você segue no Instagram e não te segue de volta, com opção de remover.",
   "permissions": [
     "cookies",
