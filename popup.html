@@ -11,10 +11,13 @@
         <header>
             <div class="header-main">
                 <h1>InstaUnfollow</h1>
-                <span class="badge" id="version-badge">v1.1</span>
+                <span class="badge" id="version-badge">v1.2</span>
             </div>
             <p id="status">Pronto para escanear</p>
-            <p id="last-scan-info" class="meta-info hidden"></p>
+            <div class="meta-row">
+                <span id="last-scan-info" class="meta-info hidden"></span>
+                <button id="clear-data-btn" class="text-btn hidden" title="Limpar histórico de escaneamento">Limpar dados</button>
+            </div>
         </header>
 
         <main>
@@ -22,8 +25,9 @@
                 <button id="scan-btn" class="primary-btn">Escanear Seguidores</button>
                 
                 <div class="bulk-actions hidden" id="bulk-actions">
-                    <button id="unfollow-all-btn" class="danger-btn">Remover Todos</button>
-                    <button id="export-btn" class="secondary-btn" title="Exportar lista de não-seguidores como CSV">Exportar CSV</button>
+                    <button id="unfollow-all-btn" class="danger-btn" title="Remover apenas contas não protegidas">Remover Pendentes</button>
+                    <button id="cancel-unfollow-btn" class="secondary-btn hidden">Parar</button>
+                    <button id="export-btn" class="secondary-btn" title="Exportar lista como CSV">Exportar CSV</button>
                 </div>
             </div>
 
@@ -36,9 +40,17 @@
 
             <div id="results-container" class="hidden">
                 <div class="results-header">
-                    <h2>Não te seguem (<span id="count">0</span>)</h2>
+                    <div class="results-title-row">
+                        <h2>Não te seguem (<span id="count">0</span>)</h2>
+                        <div class="filter-pills">
+                            <button id="filter-all" class="pill active" data-filter="all">Todos</button>
+                            <button id="filter-unprotected" class="pill" data-filter="unprotected">Sem proteção</button>
+                            <button id="filter-whitelist" class="pill" data-filter="whitelist">⭐ Protegidos (<span id="whitelist-count">0</span>)</button>
+                        </div>
+                    </div>
                     <input type="search" id="search-input" placeholder="Buscar por usuário..." aria-label="Filtrar não seguidores">
                 </div>
+                <p id="no-search-results" class="empty-msg hidden">Nenhum usuário encontrado.</p>
                 <ul id="user-list" role="list">
                     <!-- Usuários aparecerão aqui -->
                 </ul>

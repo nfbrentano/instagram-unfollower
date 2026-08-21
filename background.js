@@ -10,13 +10,34 @@ const DEFAULT_HEADERS = {
     'X-ASBD-ID': ASBD_ID,
 };
 
-chrome.action.onClicked.addListener((tab) => {
-    chrome.windows.create({
+let popupWindowId = null;
+
+chrome.action.onClicked.addListener(async () => {
+    if (popupWindowId !== null) {
+        try {
+            const win = await chrome.windows.get(popupWindowId);
+            if (win) {
+                await chrome.windows.update(popupWindowId, { focused: true });
+                return;
+            }
+        } catch (e) {
+            popupWindowId = null;
+        }
+    }
+
+    const newWin = await chrome.windows.create({
         url: chrome.runtime.getURL("popup.html"),
         type: "popup",
-        width: 400,
-        height: 600
+        width: 440,
+        height: 640
     });
+    popupWindowId = newWin ? newWin.id : null;
+});
+
+chrome.windows.onRemoved.addListener((windowId) => {
+    if (windowId === popupWindowId) {
+        popupWindowId = null;
+    }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
