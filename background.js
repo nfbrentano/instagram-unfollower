@@ -1,5 +1,15 @@
 // background.js
 
+const IG_APP_ID = '936619743392459';
+const ASBD_ID = '129477';
+
+const DEFAULT_HEADERS = {
+    'X-Requested-With': 'XMLHttpRequest',
+    'X-IG-App-ID': IG_APP_ID,
+    'X-Instagram-AJAX': '1',
+    'X-ASBD-ID': ASBD_ID,
+};
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'startScan') {
         runScan().then(sendResponse);
@@ -36,8 +46,7 @@ async function getLoggedInUser() {
     try {
         const response = await fetch('https://www.instagram.com/api/v1/web/get_current_user/', {
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-IG-App-ID': '936619743392459',
+                ...DEFAULT_HEADERS
             }
         });
         const contentType = response.headers.get('content-type');
@@ -69,15 +78,12 @@ async function fetchAll(endpoint, userId, onProgress) {
         try {
             const response = await fetch(url, {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-IG-App-ID': '936619743392459',
-                    'X-Instagram-AJAX': '1', // Often required
-                    'X-ASBD-ID': '129477',    // Common header in web requests
+                    ...DEFAULT_HEADERS
                 }
             });
 
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('text/html')) {
+            const contentType = response.headers.get('content-type') || '';
+            if (contentType.includes('text/html')) {
                 throw new Error('Unauthorized');
             }
 
@@ -91,8 +97,8 @@ async function fetchAll(endpoint, userId, onProgress) {
             const processedUsers = users.map(u => ({
                 id: String(u.pk || u.id_ || u.id),
                 username: u.username,
-                full_name: u.full_name,
-                profile_pic_url: u.profile_pic_url
+                full_name: u.full_name || '',
+                profile_pic_url: u.profile_pic_url || ''
             }));
 
             allItems = allItems.concat(processedUsers);
@@ -104,7 +110,8 @@ async function fetchAll(endpoint, userId, onProgress) {
             maxId = data.next_max_id;
             hasNextPage = !!maxId;
             
-            await new Promise(r => setTimeout(r, 2500 + Math.random() * 2000));
+            // Intervalo de segurança entre requisições de paginação
+            await new Promise(r => setTimeout(r, 2000 + Math.random() * 1500));
         } catch (err) {
             console.error(`Error fetching ${endpoint}:`, err);
             throw err;
@@ -118,22 +125,38 @@ async function runScan() {
     try {
         const userId = await getLoggedInUser();
         
-        chrome.runtime.sendMessage({ action: 'updateProgress', text: 'Buscando seguidores...' });
+        chrome.runtime.sendMessage({ action: 'updateProgress', text: 'Buscando seguidores...' }).catch(() => {});
         const followers = await fetchAll('followers', userId, (users) => {
-            chrome.runtime.sendMessage({ action: 'partialProgress', type: 'followers', count: users.length });
+            chrome.runtime.sendMessage({ action: 'partialProgress', type: 'followers', count: users.length }).catch(() => {});
         });
         const followerIds = new Set(followers.map(f => f.id));
 
-        chrome.runtime.sendMessage({ action: 'updateProgress', text: 'Buscando quem você segue...' });
+        chrome.runtime.sendMessage({ action: 'updateProgress', text: 'Buscando quem você segue...' }).catch(() => {});
         const following = await fetchAll('following', userId, (users) => {
             const newNonFollowers = users.filter(u => !followerIds.has(u.id));
             if (newNonFollowers.length > 0) {
-                chrome.runtime.sendMessage({ action: 'foundNonFollowers', users: newNonFollowers });
+                chrome.runtime.sendMessage({ action: 'foundNonFollowers', users: newNonFollowers }).catch(() => {});
             }
         });
 
         const finalNonFollowers = following.filter(f => !followerIds.has(f.id));
-        return { success: true, nonFollowers: finalNonFollowers };
+        
+        // Salvar no storage local para persistência
+        await chrome.storage.local.set({
+            lastScan: {
+                date: new Date().toISOString(),
+                nonFollowers: finalNonFollowers,
+                followersTotal: followers.length,
+                followingTotal: following.length
+            }
+        });
+
+        return { 
+            success: true, 
+            nonFollowers: finalNonFollowers, 
+            followersTotal: followers.length, 
+            followingTotal: following.length 
+        };
     } catch (error) {
         console.error('Scan error:', error);
         return { success: false, error: error.message };
@@ -148,12 +171,22 @@ async function unfollowUser(userId) {
         const response = await fetch(`https://www.instagram.com/api/v1/friendships/destroy/${userId}/`, {
             method: 'POST',
             headers: {
+                ...DEFAULT_HEADERS,
                 'X-CSRFToken': csrftoken,
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-IG-App-ID': '936619743392459',
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
+
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('text/html')) {
+            throw new Error('Sessão expirada ou página de login retornada');
+        }
+        if (response.status === 429) {
+            throw new Error('Rate Limited');
+        }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
 
         const data = await response.json();
         return { success: data.status === 'ok' };

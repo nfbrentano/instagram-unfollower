@@ -9,14 +9,22 @@
 <body>
     <div class="container">
         <header>
-            <h1>InstaUnfollow</h1>
+            <div class="header-main">
+                <h1>InstaUnfollow</h1>
+                <span class="badge" id="version-badge">v1.1</span>
+            </div>
             <p id="status">Pronto para escanear</p>
+            <p id="last-scan-info" class="meta-info hidden"></p>
         </header>
 
         <main>
             <div class="actions">
                 <button id="scan-btn" class="primary-btn">Escanear Seguidores</button>
-                <button id="unfollow-all-btn" class="danger-btn hidden">Remover Todos</button>
+                
+                <div class="bulk-actions hidden" id="bulk-actions">
+                    <button id="unfollow-all-btn" class="danger-btn">Remover Todos</button>
+                    <button id="export-btn" class="secondary-btn" title="Exportar lista de não-seguidores como CSV">Exportar CSV</button>
+                </div>
             </div>
 
             <div id="progress-container" class="hidden">
@@ -27,20 +35,23 @@
             </div>
 
             <div id="results-container" class="hidden">
-                <h2>Não te seguem de volta (<span id="count">0</span>)</h2>
-                <ul id="user-list">
+                <div class="results-header">
+                    <h2>Não te seguem (<span id="count">0</span>)</h2>
+                    <input type="search" id="search-input" placeholder="Buscar por usuário..." aria-label="Filtrar não seguidores">
+                </div>
+                <ul id="user-list" role="list">
                     <!-- Usuários aparecerão aqui -->
                 </ul>
             </div>
 
             <div id="login-msg" class="hidden">
-                <p>Por favor, faça login no Instagram para continuar.</p>
-                <a href="https://www.instagram.com" target="_blank" class="link-btn">Ir para o Instagram</a>
+                <p>Por favor, faça login na sua conta do Instagram para escanear.</p>
+                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="link-btn">Abrir Instagram</a>
             </div>
         </main>
 
         <footer>
-            <p>Use com moderação para evitar bloqueios.</p>
+            <p>Use com moderação para respeitar os limites do Instagram.</p>
         </footer>
     </div>
     <script src="popup.js"></script>

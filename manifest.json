@@ -5,7 +5,8 @@
   "description": "Veja quem você segue no Instagram e não te segue de volta, com opção de remover.",
   "permissions": [
     "cookies",
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "host_permissions": [
     "https://*.instagram.com/*"
